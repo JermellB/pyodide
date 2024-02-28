@@ -24,7 +24,7 @@ import email.parser
 import urllib
 
 try:
-    FileExistsError
+    raise FileExistsError
 except NameError:
     FileExistsError = OSError
 
