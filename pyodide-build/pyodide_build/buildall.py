@@ -21,6 +21,7 @@ from . import common
 from .buildpkg import needs_rebuild
 from .common import UNVENDORED_STDLIB_MODULES, find_matching_wheels
 from .io import parse_package_config
+from security import safe_command
 
 
 class BuildError(Exception):
@@ -119,8 +120,7 @@ class Package(BasePackage):
 
     def build(self, outputdir: Path, args) -> None:
 
-        p = subprocess.run(
-            [
+        p = safe_command.run(subprocess.run, [
                 sys.executable,
                 "-m",
                 "pyodide_build",

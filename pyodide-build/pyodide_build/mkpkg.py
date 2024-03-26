@@ -11,6 +11,7 @@ import urllib.request
 import warnings
 from pathlib import Path
 from typing import Any, Literal
+from security import safe_command
 
 PACKAGES_ROOT = Path(__file__).parents[2] / "packages"
 
@@ -102,7 +103,7 @@ def _import_ruamel_yaml():
 
 
 def run_prettier(meta_path):
-    subprocess.run(["npx", "prettier", "-w", meta_path])
+    safe_command.run(subprocess.run, ["npx", "prettier", "-w", meta_path])
 
 
 def make_package(

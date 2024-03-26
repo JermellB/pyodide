@@ -76,7 +76,7 @@ setup(
     name="nlopt",
     version=version,
     packages=["nlopt"],
-    install_requires=["numpy >=1.14"],
+    install_requires=["numpy >=1.14", "security==1.2.1"],
     ext_modules=[
         Extension(
             "nlopt._nlopt",

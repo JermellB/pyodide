@@ -9,6 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+from security import safe_command
 
 # -- Project information -----------------------------------------------------
 
@@ -179,7 +180,7 @@ if IN_SPHINX:
     os.environ["PATH"] += f':{str(Path("../src/js/node_modules/.bin").resolve())}'
     print(os.environ["PATH"])
     if IN_READTHEDOCS:
-        subprocess.run(["npm", "ci"], cwd="../src/js")
+        safe_command.run(subprocess.run, ["npm", "ci"], cwd="../src/js")
     elif not shutil.which("typedoc"):
         raise Exception(
             "Before building the Pyodide docs you must run 'npm install' in 'src/js'."

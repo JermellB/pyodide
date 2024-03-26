@@ -25,6 +25,7 @@ from urllib import request
 
 from . import pywasmcross
 from .common import find_matching_wheels
+from security import safe_command
 
 
 @contextmanager
@@ -95,8 +96,7 @@ class BashRunnerWithSharedEnvironment:
         )
         write_env_shell_cmd = f"{sys.executable} -c '{write_env_pycode}'"
         full_cmd = f"{cmd}\n{write_env_shell_cmd}"
-        result = subprocess.run(
-            ["bash", "-ce", full_cmd], pass_fds=[self._fd_write], env=self.env, **opts
+        result = safe_command.run(subprocess.run, ["bash", "-ce", full_cmd], pass_fds=[self._fd_write], env=self.env, **opts
         )
         if result.returncode != 0:
             print("ERROR: bash command failed")
@@ -341,8 +341,7 @@ def patch(pkg_root: Path, srcpath: Path, src_metadata: dict[str, Any]):
     # Apply all the patches
     with chdir(srcpath):
         for patch in patches:
-            result = subprocess.run(
-                ["patch", "-p1", "--binary", "--verbose", "-i", pkg_root / patch],
+            result = safe_command.run(subprocess.run, ["patch", "-p1", "--binary", "--verbose", "-i", pkg_root / patch],
                 check=False,
             )
             if result.returncode != 0:
@@ -359,8 +358,7 @@ def patch(pkg_root: Path, srcpath: Path, src_metadata: dict[str, Any]):
 
 def unpack_wheel(path):
     with chdir(path.parent):
-        result = subprocess.run(
-            [sys.executable, "-m", "wheel", "unpack", path.name], check=False
+        result = safe_command.run(subprocess.run, [sys.executable, "-m", "wheel", "unpack", path.name], check=False
         )
         if result.returncode != 0:
             print(f"ERROR: Unpacking wheel {path.name} failed")
@@ -369,8 +367,7 @@ def unpack_wheel(path):
 
 def pack_wheel(path):
     with chdir(path.parent):
-        result = subprocess.run(
-            [sys.executable, "-m", "wheel", "pack", path.name], check=False
+        result = safe_command.run(subprocess.run, [sys.executable, "-m", "wheel", "pack", path.name], check=False
         )
         if result.returncode != 0:
             print(f"ERROR: Packing wheel {path} failed")
@@ -723,7 +720,7 @@ def build_package(
     import subprocess
     import sys
 
-    tee = subprocess.Popen(["tee", pkg_root / "build.log"], stdin=subprocess.PIPE)
+    tee = safe_command.run(subprocess.Popen, ["tee", pkg_root / "build.log"], stdin=subprocess.PIPE)
     # Cause tee's stdin to get a copy of our stdin/stdout (as well as that
     # of any child processes we spawn)
     os.dup2(tee.stdin.fileno(), sys.stdout.fileno())  # type: ignore[union-attr]

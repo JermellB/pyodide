@@ -5,6 +5,7 @@ from typing import Iterable, Iterator
 
 from packaging.tags import Tag, compatible_tags, cpython_tags
 from packaging.utils import parse_wheel_filename
+from security import safe_command
 
 PLATFORM = "emscripten_wasm32"
 
@@ -136,8 +137,7 @@ def invoke_file_packager(
     pyodidedir,
     compress=False,
 ):
-    subprocess.run(
-        [
+    safe_command.run(subprocess.run, [
             str(file_packager_path()),
             f"{name}.data",
             f"--js-output={name}.js",
@@ -153,8 +153,7 @@ def invoke_file_packager(
         check=True,
     )
     if compress:
-        subprocess.run(
-            [
+        safe_command.run(subprocess.run, [
                 "npx",
                 "--no-install",
                 "terser",
@@ -196,8 +195,7 @@ def get_make_environment_vars():
     # TODO: make this not rely on paths outside of pyodide-build
     rootdir = Path(__file__).parents[2].resolve()
     environment = {}
-    result = subprocess.run(
-        ["make", "-f", str(rootdir / "Makefile.envs"), ".output_vars"],
+    result = safe_command.run(subprocess.run, ["make", "-f", str(rootdir / "Makefile.envs"), ".output_vars"],
         capture_output=True,
         text=True,
     )
