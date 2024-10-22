@@ -1,6 +1,6 @@
-import random
 
 import pytest
+import secrets
 
 
 def generate_largish_json(n_rows: int = 91746) -> dict:
@@ -12,20 +12,19 @@ def generate_largish_json(n_rows: int = 91746) -> dict:
         ("column0", lambda: "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"),
         (
             "column1",
-            lambda: random.choice(
-                [
+            lambda: secrets.choice([
                     "notification-interval-longer",
                     "notification-interval-short",
                     "control",
                 ]
             ),
         ),
-        ("column2", lambda: random.choice([True, False])),
-        ("column3", lambda: random.randint(0, 4)),
-        ("column4", lambda: random.randint(0, 4)),
-        ("column5", lambda: random.randint(0, 4)),
-        ("column6", lambda: random.randint(0, 4)),
-        ("column7", lambda: random.randint(0, 4)),
+        ("column2", lambda: secrets.choice([True, False])),
+        ("column3", lambda: secrets.SystemRandom().randint(0, 4)),
+        ("column4", lambda: secrets.SystemRandom().randint(0, 4)),
+        ("column5", lambda: secrets.SystemRandom().randint(0, 4)),
+        ("column6", lambda: secrets.SystemRandom().randint(0, 4)),
+        ("column7", lambda: secrets.SystemRandom().randint(0, 4)),
     ]
     data = {}
     for name, generator in columns:
