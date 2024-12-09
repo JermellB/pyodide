@@ -227,12 +227,12 @@ def test_dup_temp_file():
     os.dup2(tf.fileno(), 50)
     s = b"hello there!"
     tf.write(s)
-    tf2 = open(fd1, "w+")
-    assert tf2.tell() == len(s)
-    # This next assertion actually demonstrates a bug in dup: the correct value
-    # to return should be b"".
-    assert os.read(fd1, 50) == b""
-    tf2.seek(1)
+    with open(fd1, "w+") as tf2:
+        assert tf2.tell() == len(s)
+        # This next assertion actually demonstrates a bug in dup: the correct value
+        # to return should be b"".
+        assert os.read(fd1, 50) == b""
+        tf2.seek(1)
     assert tf.tell() == 1
     assert tf.read(100) == b"ello there!"
 
