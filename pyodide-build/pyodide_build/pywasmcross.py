@@ -11,6 +11,7 @@ cross-compiling and then pass the command long to emscripten.
 import json
 import os
 import sys
+from security import safe_command
 
 IS_MAIN = __name__ == "__main__"
 if IS_MAIN:
@@ -505,7 +506,7 @@ def handle_command(
 
     if line[0] == "gfortran":
         if "-dumpversion" in line:
-            sys.exit(subprocess.run(line).returncode)
+            sys.exit(safe_command.run(subprocess.run, line).returncode)
         tmp = replay_f2c(line)
         if tmp is None:
             sys.exit(0)
@@ -516,7 +517,7 @@ def handle_command(
     if args.pkgname == "scipy":
         scipy_fixes(new_args)
 
-    returncode = subprocess.run(new_args).returncode
+    returncode = safe_command.run(subprocess.run, new_args).returncode
     if returncode != 0:
         sys.exit(returncode)
 
