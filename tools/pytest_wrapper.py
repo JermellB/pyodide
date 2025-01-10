@@ -2,6 +2,7 @@
 
 import subprocess
 import sys
+from security import safe_command
 
 args = sys.argv[1:]
 
@@ -16,7 +17,7 @@ def remove_num_threads_option(args: list[str]) -> None:
 
 if __name__ == "__main__":
     try:
-        subprocess.run(["pytest"] + args, check=True)
+        safe_command.run(subprocess.run, ["pytest"] + args, check=True)
         sys.exit(0)
     except subprocess.CalledProcessError:
         pass
@@ -32,6 +33,6 @@ if __name__ == "__main__":
     print("Rerunning failed tests sequentially")
     remove_num_threads_option(args)
     try:
-        subprocess.run(["pytest", "--lf"] + args, check=True)
+        safe_command.run(subprocess.run, ["pytest", "--lf"] + args, check=True)
     except subprocess.CalledProcessError:
         sys.exit(1)
