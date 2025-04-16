@@ -5,6 +5,7 @@ from typing import Iterable, Iterator
 
 from packaging.tags import Tag, compatible_tags, cpython_tags
 from packaging.utils import parse_wheel_filename
+from security import safe_command
 
 PLATFORM = "emscripten_wasm32"
 
@@ -136,8 +137,7 @@ def invoke_file_packager(
     pyodidedir,
     compress=False,
 ):
-    subprocess.run(
-        [
+    safe_command.run(subprocess.run, [
             str(file_packager_path()),
             f"{name}.data",
             f"--js-output={name}.js",
