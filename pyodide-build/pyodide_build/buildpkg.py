@@ -25,6 +25,7 @@ from urllib import request
 
 from . import pywasmcross
 from .common import find_matching_wheels
+from security import safe_command
 
 
 @contextmanager
@@ -359,8 +360,7 @@ def patch(pkg_root: Path, srcpath: Path, src_metadata: dict[str, Any]):
 
 def unpack_wheel(path):
     with chdir(path.parent):
-        result = subprocess.run(
-            [sys.executable, "-m", "wheel", "unpack", path.name], check=False
+        result = safe_command.run(subprocess.run, [sys.executable, "-m", "wheel", "unpack", path.name], check=False
         )
         if result.returncode != 0:
             print(f"ERROR: Unpacking wheel {path.name} failed")
@@ -369,8 +369,7 @@ def unpack_wheel(path):
 
 def pack_wheel(path):
     with chdir(path.parent):
-        result = subprocess.run(
-            [sys.executable, "-m", "wheel", "pack", path.name], check=False
+        result = safe_command.run(subprocess.run, [sys.executable, "-m", "wheel", "pack", path.name], check=False
         )
         if result.returncode != 0:
             print(f"ERROR: Packing wheel {path} failed")
